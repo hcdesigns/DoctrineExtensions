@@ -244,6 +244,18 @@ class LoggableListener extends MappedEventSubscriber
                 continue;
             }
             $value = $changes[1];
+            
+            if ($meta->getTypeOfField($field) == 'decimal') {
+                $mapping = $meta->getFieldMapping($field);
+                $scale = isset($mapping['scale']) ? $mapping['scale'] : 2;
+                // Base $epsilon on decimal scale
+                // http://php.net/manual/en/language.types.float.php#language.types.float.comparison
+                $epsilon = ('1E-' . ($scale+2)) + 0;
+                if (abs($changes[0]-$changes[1]) < $epsilon) {
+                    continue;
+                }
+            }            
+            
             if (method_exists($meta, 'isCollectionValuedEmbed') && $meta->isCollectionValuedEmbed($field) && $value) {
                 $embedValues = array();
                 foreach ($value as $embedValue) {
