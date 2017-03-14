@@ -242,7 +242,12 @@ class LoggableListener extends MappedEventSubscriber
                 if (abs($changes[0]-$changes[1]) < $epsilon) {
                     continue;
                 }
-            }            
+            }
+            elseif ($meta->getTypeOfField($field) == 'boolean') {
+                if ((bool) $changes[0] === (bool) $changes[1]) {
+                    continue;
+                }
+            }
             
             if ($meta->isSingleValuedAssociation($field) && $value) {
                 if ($wrapped->isEmbeddedAssociation($field)) {
